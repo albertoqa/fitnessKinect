@@ -9,9 +9,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
     using System;
     using System.IO;
     using System.Windows;
-    using System.Windows.Media.Imaging;
     using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using Microsoft.Kinect;
+
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -172,6 +173,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
             if (null != this.sensor)
             {
+
                 // Turn on the color stream to receive color frames
                 this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
 
@@ -291,7 +293,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 this.drawingGroup.ClipGeometry = new RectangleGeometry(new Rect(0.0, 0.0, RenderWidth, RenderHeight));
             }
         }
-
         /// <summary>
         /// Draws a skeleton's bones and joints
         /// </summary>
