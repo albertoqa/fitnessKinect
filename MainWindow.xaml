@@ -58,14 +58,18 @@
             <TextBlock DockPanel.Dock="Right" Margin="0 0 -1 0" VerticalAlignment="Bottom" Foreground="{StaticResource MediumGreyBrush}" FontFamily="Segoe UI" FontSize="18">Skeleton Basics</TextBlock>
             <Image Grid.Column="1" Source="Images\Status.png" Stretch="None" HorizontalAlignment="Center" Margin="0 0 0 5"/>
         </DockPanel>
-        <Viewbox Grid.Row="1" Stretch="Uniform" HorizontalAlignment="Center">
-            <Image Name="Image" Width="640" Height="480"/>
-        </Viewbox>
+        <Grid Name="VideoGrid" ClipToBounds="True" Background="AliceBlue">
+            <Image Name="ColorImage" Width="640" Height="480" HorizontalAlignment="Right" Margin="0,0,51,0" VerticalAlignment="Top"/>
+            <Image Name="SkeletalImage" Width="640" Height="480" HorizontalAlignment="Right" Margin="0,0,51,0" VerticalAlignment="Top"/>
+
+            <Canvas Background="Transparent"/>
+        </Grid>
         <CheckBox Grid.Row="2" Style="{StaticResource SquareCheckBox}" Content="Seated Mode" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 10 10 10" Name="checkBoxSeatedMode" Checked="CheckBoxSeatedModeChanged" Unchecked="CheckBoxSeatedModeChanged"/>
         <StatusBar Grid.Row="3" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
             <StatusBarItem Padding="0 0 0 10">
                 <TextBlock Name="statusBarText" Margin="-1 0 0 0">Click 'Seated' to change skeletal pipeline type!</TextBlock>
             </StatusBarItem>
-        </StatusBar>       
+        </StatusBar>
+        <Label x:Name="solucionP" Content="Visor" HorizontalAlignment="Right" FontSize="12" Margin="0,1,10,2" Grid.Row="2" Grid.RowSpan="2" Width="415"></Label>
     </Grid>
 </Window>
