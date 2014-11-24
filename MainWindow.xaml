@@ -61,13 +61,18 @@
         <Grid Name="VideoGrid" ClipToBounds="True" Background="AliceBlue">
             <Image Name="ColorImage" Width="640" Height="480" HorizontalAlignment="Right" Margin="0,0,51,0" VerticalAlignment="Top"/>
             <Image Name="SkeletalImage" Width="640" Height="480" HorizontalAlignment="Right" Margin="0,0,51,0" VerticalAlignment="Top"/>
-
-            <Canvas Background="Transparent"/>
+            <Canvas Background="Transparent" />
         </Grid>
-        <CheckBox Grid.Row="2" Style="{StaticResource SquareCheckBox}" Content="Seated Mode" Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 10 10 10" Name="checkBoxSeatedMode" Checked="CheckBoxSeatedModeChanged" Unchecked="CheckBoxSeatedModeChanged"/>
+        <Button Name="startButton" Click="startGame" Width="100" Height="100" Margin="0,0,0,0" Grid.Row="1" >Start Game</Button>
+        <TextBlock Name="exercise" FontSize="15" Visibility="Hidden" Margin="0,0,0,0" Grid.Row="1">Ejercicio:</TextBlock>
+        <Label x:Name="exer" FontSize="15" Visibility="Hidden" Grid.Row="1" Margin="70,-4,0,0" Content=""></Label>
+        <TextBlock Name="score" FontSize="15" Visibility="Hidden" Margin="0,25,0,0" Grid.Row="1">Puntuación:</TextBlock>
+        <Label x:Name="scor" FontSize="15" Visibility="Hidden" Grid.Row="1" Margin="90,22,0,0" Content=""></Label>
+        <TextBlock Name="ntry" FontSize="15" Visibility="Hidden" Margin="0,100,0,0" Grid.Row="1">Intentos: </TextBlock>
+        <Label x:Name="ntrys" FontSize="15" Visibility="Hidden" Grid.Row="1" Margin="70,96,0,0" Content=""></Label>
         <StatusBar Grid.Row="3" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Foreground="{StaticResource MediumGreyBrush}">
             <StatusBarItem Padding="0 0 0 10">
-                <TextBlock Name="statusBarText" Margin="-1 0 0 0">Click 'Seated' to change skeletal pipeline type!</TextBlock>
+                <TextBlock Name="statusBarText" Margin="-1 0 0 0">Ejercita tus piernas!</TextBlock>
             </StatusBarItem>
         </StatusBar>
     </Grid>

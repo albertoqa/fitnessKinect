@@ -69,6 +69,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>        
         private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
 
+        private int ntr = 0, sc = 0;
+        private string[] ex;
+
         /// <summary>
         /// Active Kinect sensor
         /// </summary>
@@ -151,6 +154,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         {
             // Create the drawing group we'll use for drawing
             this.drawingGroup = new DrawingGroup();
+
+            this.exer.Content = ex;
+            this.ntrys.Content = ntr;
+            this.scor.Content = sc;
 
             // Create an image source that we can use in our image control
             this.imageSource = new DrawingImage(this.drawingGroup);
@@ -363,6 +370,17 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             return new Point(depthPoint.X, depthPoint.Y);
         }
 
+        private void startGame(object sender, RoutedEventArgs e)
+        {
+            startButton.Visibility = Visibility.Hidden;
+            score.Visibility = Visibility.Visible;
+            ntry.Visibility = Visibility.Visible;
+            exercise.Visibility = Visibility.Visible;
+            exer.Visibility = Visibility.Visible;
+            ntrys.Visibility = Visibility.Visible;
+            scor.Visibility = Visibility.Visible;
+        }
+
         /// <summary>
         /// Draws a bone line between two joints
         /// </summary>
@@ -408,14 +426,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         {
             if (null != this.sensor)
             {
-                if (this.checkBoxSeatedMode.IsChecked.GetValueOrDefault())
-                {
-                    this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
-                }
-                else
-                {
-                    this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;
-                }
+              
+                this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;
             }
         }
     }
