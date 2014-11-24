@@ -566,5 +566,177 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;
             }
         }
+
+        // Obtenido de Carla Simoes
+        private bool pos0(Skeleton skeleton)
+        {
+            bool body = IsAlignedBodyAndArms(skeleton);
+            bool legs = AreFeetTogether(skeleton);
+
+            if (body && legs)
+                return true;
+            else
+                return false;
+        }
+
+        // boolean method that return true if body is completely aligned and arms are in a relaxed position
+        private bool IsAlignedBodyAndArms(Skeleton received)
+        {
+            double HipCenterPosX = received.Joints[JointType.HipCenter].Position.X;
+            double HipCenterPosY = received.Joints[JointType.HipCenter].Position.Y;
+            double HipCenterPosZ = received.Joints[JointType.HipCenter].Position.Z;
+
+            double ShoulCenterPosX = received.Joints[JointType.ShoulderCenter].Position.X;
+            double ShoulCenterPosY = received.Joints[JointType.ShoulderCenter].Position.Y;
+            double ShoulCenterPosZ = received.Joints[JointType.ShoulderCenter].Position.Z;
+
+            double HeadCenterPosX = received.Joints[JointType.Head].Position.X;
+            double HeadCenterPosY = received.Joints[JointType.Head].Position.Y;
+            double HeadCenterPosZ = received.Joints[JointType.Head].Position.Z;
+
+            double ElbLPosX = received.Joints[JointType.ElbowLeft].Position.X;
+            double ElbLPosY = received.Joints[JointType.ElbowLeft].Position.Y;
+
+            double ElbRPosX = received.Joints[JointType.ElbowRight].Position.X;
+            double ElbRPosY = received.Joints[JointType.ElbowRight].Position.Y;
+
+            double WriLPosX = received.Joints[JointType.WristLeft].Position.X;
+            double WriLPosY = received.Joints[JointType.WristLeft].Position.Y;
+            double WriLPosZ = received.Joints[JointType.WristLeft].Position.Z;
+
+            double WriRPosX = received.Joints[JointType.WristRight].Position.X;
+            double WriRPosY = received.Joints[JointType.WristRight].Position.Y;
+            double WriRPosZ = received.Joints[JointType.WristRight].Position.Z;
+
+            double ShouLPosX = received.Joints[JointType.ShoulderLeft].Position.X;
+            double ShouLPosY = received.Joints[JointType.ShoulderLeft].Position.Y;
+            double ShouLPosZ = received.Joints[JointType.ShoulderLeft].Position.Z;
+
+            double ShouRPosX = received.Joints[JointType.ShoulderRight].Position.X;
+            double ShouRPosY = received.Joints[JointType.ShoulderRight].Position.Y;
+            double ShouRPosZ = received.Joints[JointType.ShoulderRight].Position.Z;
+
+            //have to change to correspond to the 5% error
+            //distance from Shoulder to Wrist for the projection in line with shoulder
+            double distShouLtoWristL = ShouLPosY - WriLPosY;
+            //caldulate admited error 5% that correspond to 9 degrees for each side
+            double radian = (9 * Math.PI) / 180;
+            double DistErrorL = distShouLtoWristL * Math.Tan(radian);
+
+            double distShouLtoWristR = ShouRPosY - WriRPosY;
+            //caldulate admited error 5% that correspond to 9 degrees for each side
+
+            double DistErrorR = distShouLtoWristR * Math.Tan(radian);
+            //double ProjectionWristX = ShouLPosX;
+            //double ProjectionWristZ = WriLPosZ;
+
+            //determine of projected point from shoulder to wrist LEFT and RIGHT and then assume error
+            double ProjectedPointWristLX = ShouLPosX;
+            double ProjectedPointWristLY = WriLPosY;
+            double ProjectedPointWristLZ = ShouLPosZ;
+
+            double ProjectedPointWristRX = ShouRPosX;
+            double ProjectedPointWristRY = WriRPosY;
+            double ProjectedPointWristRZ = ShouRPosZ;
+
+
+            //Create method to verify if the center of the body is completely aligned
+            //head with shoulder center and with hip center
+            if (Math.Abs(HeadCenterPosX - ShoulCenterPosX) <= 0.05 && Math.Abs(ShoulCenterPosX - HipCenterPosX) <= 0.05)
+            {
+                //if position of left wrist is between [ProjectedPointWrist-DistError,ProjectedPointWrist+DistError]
+                if (Math.Abs(WriLPosX - ProjectedPointWristLX) <= DistErrorL && Math.Abs(WriRPosX - ProjectedPointWristRX) <= DistErrorR)
+                {
+                    return true;
+                }
+                else return false;
+            }
+            else return false;
+
+        }
+        //first position to be Tracked and Accepted
+        private bool AreFeetTogether(Skeleton received)
+        {
+            if (null != this.sensor)
+            {
+                foreach (Joint joint in received.Joints)
+                {
+                    if (joint.TrackingState == JointTrackingState.Tracked)
+                    {//first verify if the body is alignet and arms are in a relaxed position
+
+                        //{here verify if the feet are together
+                        //use the same strategy that was used in the previous case of the arms in a  relaxed position
+                        double HipCenterPosX = received.Joints[JointType.HipCenter].Position.X;
+                        double HipCenterPosY = received.Joints[JointType.HipCenter].Position.Y;
+                        double HipCenterPosZ = received.Joints[JointType.HipCenter].Position.Z;
+
+                        //if left ankle is very close to right ankle then verify the rest of the skeleton points
+                        //if (received.Joints[JointType.AnkleLeft].Equals(received.Joints[JointType.AnkleRight])) 
+                        double AnkLPosX = received.Joints[JointType.AnkleLeft].Position.X;
+                        double AnkLPosY = received.Joints[JointType.AnkleLeft].Position.Y;
+                        double AnkLPosZ = received.Joints[JointType.AnkleLeft].Position.Z;
+
+                        double AnkRPosX = received.Joints[JointType.AnkleRight].Position.X;
+                        double AnkRPosY = received.Joints[JointType.AnkleRight].Position.Y;
+                        double AnkRPosZ = received.Joints[JointType.AnkleRight].Position.Z;
+                        //assume that the distance Y between HipCenter to each foot is the same
+                        double distHiptoAnkleL = HipCenterPosY - AnkLPosY;
+                        //caldulate admited error 5% that correspond to 9 degrees for each side
+                        double radian1 = (4.5 * Math.PI) / 180;
+                        double DistErrorL = distHiptoAnkleL * Math.Tan(radian1);
+                        //determine of projected point from HIP CENTER to LEFT ANKLE and RIGHT and then assume error
+                        double ProjectedPointFootLX = HipCenterPosX;
+                        double ProjectedPointFootLY = AnkLPosY;
+                        double ProjectedPointFootLZ = HipCenterPosZ;
+
+
+
+                        // could variate AnkLposX and AnkLPosY
+                        if (Math.Abs(AnkLPosX - ProjectedPointFootLX) <= DistErrorL && Math.Abs(AnkRPosX - ProjectedPointFootLX) <= DistErrorL)
+                            return true;
+                        else
+                            return false;
+
+                    }//CLOSE if (joint.TrackingState == JointTrackingState.Tracked)
+                    else return false;
+                }//close foreach
+
+            }//close if !null
+            return false;
+        }//close method AreFeetTogether
+
+
+        // code from Pedrojp
+        private bool pos1(Skeleton skeleton)
+        {
+            bool a = BrazoDerechoLevantado(skeleton);
+            bool b = BrazoIzquierdoLevantado(skeleton);
+
+            if (a && b)
+                return true;
+            else
+                return false;
+        }
+
+        private bool BrazoIzquierdoLevantado(Skeleton skeleton)
+        {
+            // Si el brazo derecho se encuentra por encima de la cabeza
+            return (skeleton.Joints[JointType.ElbowLeft].Position.Y >= skeleton.Joints[JointType.ShoulderLeft].Position.Y) &&
+                                    (skeleton.Joints[JointType.WristLeft].Position.Y >= skeleton.Joints[JointType.ShoulderLeft].Position.Y) &&
+                                    (skeleton.Joints[JointType.WristLeft].Position.Y < skeleton.Joints[JointType.Head].Position.Y);
+        }
+
+        private bool BrazoDerechoLevantado(Skeleton skeleton)
+        {
+            // Si el brazo izquierdo se encuentra por encima de la cabeza
+            return (skeleton.Joints[JointType.ElbowRight].Position.Y >= skeleton.Joints[JointType.ShoulderRight].Position.Y) &&
+                                  (skeleton.Joints[JointType.WristRight].Position.Y >= skeleton.Joints[JointType.ShoulderRight].Position.Y) &&
+                                  (skeleton.Joints[JointType.WristRight].Position.Y < skeleton.Joints[JointType.Head].Position.Y);
+        }
+
+
+
+
+
     }
 }
