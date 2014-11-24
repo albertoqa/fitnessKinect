@@ -107,7 +107,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             InitializeComponent();
             this.ex = new string[5];
             this.ex[0] = "Posición inicial - brazos relajados y piernas juntas";
-            this.ex[1] = "Mueve los brazos hasta que formen una cruz con tu cuerpo";
+            this.ex[1] = "Levanta los brazos por encima de la cabeza";
             this.ex[2] = "Manten los brazos, levanta la pierna izquierda x grados y vuelve a bajarla";
             this.ex[3] = "Manten los brazos, levanta la pierna derecha x grados y vuelve a bajarla";
             this.ex[4] = "Vuelve a la posición inicial - brazos relajados y piernas juntas";
