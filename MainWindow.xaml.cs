@@ -397,6 +397,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             reps.Visibility = Visibility.Visible;
             rep.Visibility = Visibility.Visible;
             of5.Visibility = Visibility.Visible;
+
+            nmov = ntr = sc = repes = 0; 
+            arriba = false;
+
         }
 
         private void endGame()
@@ -467,6 +471,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 // si ya hemos subido y bajado 5 veces
                 if (repes == 4)
                 {
+                    this.inf.Content = "Eres todo un atleta! Intenta repetirlo con la otra pierna!";
                     nmov++;
                 }
             }
@@ -499,6 +504,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 // si ya hemos subido y bajado 5 veces
                 if (repes == 4)
                 {
+                    this.inf.Content = "Ya casi hemos terminado, solo falta que te relajes...";
                     nmov++;
                 }
             }
@@ -507,6 +513,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 this.exer.Content = ex[4];
                 if (pos0(skeleton))
                 {
+                    this.inf.Content = "Felicidades!!! Lo has conseguido ;)";
                     nmov++;
                 }
             }
