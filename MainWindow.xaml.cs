@@ -69,8 +69,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>        
         private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
 
-        private int ntr = 0, sc = 0;
+        private int nmov;
+        private int ntr = 0, sc = 0, repes = 0;
         private string[] ex;
+        private bool arriba = false;
 
         /// <summary>
         /// Active Kinect sensor
@@ -103,6 +105,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public MainWindow()
         {
             InitializeComponent();
+            this.ex = new string[5];
+            this.ex[0] = "Posición inicial - brazos relajados y piernas juntas";
+            this.ex[1] = "Mueve los brazos hasta que formen una cruz con tu cuerpo";
+            this.ex[2] = "Manten los brazos, levanta la pierna izquierda x grados y vuelve a bajarla";
+            this.ex[3] = "Manten los brazos, levanta la pierna derecha x grados y vuelve a bajarla";
+            this.ex[4] = "Vuelve a la posición inicial - brazos relajados y piernas juntas";
         }
 
         /// <summary>
@@ -155,9 +163,13 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             // Create the drawing group we'll use for drawing
             this.drawingGroup = new DrawingGroup();
 
-            this.exer.Content = ex;
+            nmov = 0;
+
+            this.exer.Content = ex[nmov];
             this.ntrys.Content = ntr;
-            this.scor.Content = sc;
+            this.scor.Content = sc; 
+            this.rep.Content = repes;
+            this.inf.Content = "Empezamos el juego!";
 
             // Create an image source that we can use in our image control
             this.imageSource = new DrawingImage(this.drawingGroup);
@@ -307,6 +319,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <param name="drawingContext">drawing context to draw to</param>
         private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
         {
+
+            gameControl(skeleton, drawingContext);
+
             // Render Torso
             this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
@@ -379,6 +394,104 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             exer.Visibility = Visibility.Visible;
             ntrys.Visibility = Visibility.Visible;
             scor.Visibility = Visibility.Visible;
+            reps.Visibility = Visibility.Visible;
+            rep.Visibility = Visibility.Visible;
+            of5.Visibility = Visibility.Visible;
+        }
+
+        private void endGame()
+        {
+            startButton.Visibility = Visibility.Visible;
+            score.Visibility = Visibility.Hidden;
+            ntry.Visibility = Visibility.Hidden;
+            exercise.Visibility = Visibility.Hidden;
+            exer.Visibility = Visibility.Hidden;
+            ntrys.Visibility = Visibility.Hidden;
+            scor.Visibility = Visibility.Hidden;
+            reps.Visibility = Visibility.Hidden;
+            rep.Visibility = Visibility.Hidden;
+            of5.Visibility = Visibility.Hidden;
+        }
+
+        private void gameControl(Skeleton skeleton, DrawingContext drawingContext)
+        {
+            // movimiento en reposo
+            if (nmov == 0)
+            {
+                this.exer.Content = ex[0];
+                if (pos0(skeleton))
+                {
+                    this.inf.Content = "Muy bien, has superado el primer movimiento";
+                    nmov++;
+                }
+               
+            }
+                // brazos en cruz
+            else if (nmov == 1)
+            {
+                this.exer.Content = ex[1];
+                if (pos1(skeleton))
+                {
+                    this.inf.Content = "Perfecto! Pasamos al siguiente nivel";
+                    nmov++;
+                }
+
+            }
+                // ya hemos puesto los brazos en cruz
+            else if (nmov == 2)
+            {
+                this.exer.Content = ex[2];
+
+                // si en algun momento bajamos los brazos, empezamos de cero el ejercicio
+                if (!pos1(skeleton))
+                {
+                    this.inf.Content = "Has bajado los brazos, tenemos que empezar de nuevo.";
+                    nmov = 0;
+                }
+
+                // si llegamos arriba
+                if (!arriba && pos2(skeleton))
+                {
+                   // nmov++;
+                   // repes++;
+                    arriba = true;
+                }
+
+                // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
+                if (arriba && pos1(skeleton))
+                {
+                    arriba = false;
+                    repes++;
+                }
+
+                // si ya hemos subido y bajado 5 veces
+                if (repes == 4)
+                {
+                    nmov++;
+                }
+            }
+            else if (nmov == 3)
+            {
+                this.exer.Content = ex[3];
+                repes = 0;
+                if (pos3(skeleton))
+                {
+                    nmov++;
+                }
+            }
+            else if (nmov == 4)
+            {
+                this.exer.Content = ex[4];
+                if (pos0(skeleton))
+                {
+                    nmov++;
+                }
+            }
+            else
+            {
+                endGame();
+            }
+
         }
 
         /// <summary>
