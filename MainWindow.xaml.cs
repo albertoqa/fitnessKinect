@@ -458,7 +458,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 }
 
                 // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
-                if (arriba && pos1(skeleton))
+                if (arriba && pos1(skeleton) && repes <=4)
                 {
                     arriba = false;
                     repes++;
@@ -472,9 +472,32 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             }
             else if (nmov == 3)
             {
-                this.exer.Content = ex[3];
-                repes = 0;
-                if (pos3(skeleton))
+                this.exer.Content = ex[2];
+
+                // si en algun momento bajamos los brazos, empezamos de cero el ejercicio
+                if (!pos1(skeleton))
+                {
+                    this.inf.Content = "Has bajado los brazos, tenemos que empezar de nuevo.";
+                    nmov = 0;
+                }
+
+                // si llegamos arriba
+                if (!arriba && pos3(skeleton))
+                {
+                    // nmov++;
+                    // repes++;
+                    arriba = true;
+                }
+
+                // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
+                if (arriba && pos1(skeleton) && repes <= 4)
+                {
+                    arriba = false;
+                    repes++;
+                }
+
+                // si ya hemos subido y bajado 5 veces
+                if (repes == 4)
                 {
                     nmov++;
                 }
