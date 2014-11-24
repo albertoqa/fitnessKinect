@@ -734,8 +734,85 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                                   (skeleton.Joints[JointType.WristRight].Position.Y < skeleton.Joints[JointType.Head].Position.Y);
         }
 
+        private bool pos2(Skeleton skeleton)
+        {
+            double angle = 30;
+            double allowed_error = 10;
 
+            return angleLegL(skeleton, angle, allowed_error);
+        }
 
+        /// <summary>
+        /// Check position of the left leg
+        /// </summary>
+        /// <param name="skeleton">skeleton to check</param>
+        /// <param name="angle">angle searched</param>
+        /// <param name="allowed_error">error allowed in the comprobation</param>
+        private bool angleLegL(Skeleton skeleton, double angle, double allowed_error)
+        {
+
+            //return variable - true if position is valid, false if invalid
+            bool check = true;
+
+            float distA, distB;
+            distA = System.Math.Abs(skeleton.Joints[JointType.HipCenter].Position.Y - skeleton.Joints[JointType.AnkleLeft].Position.Y);
+            distB = System.Math.Abs(skeleton.Joints[JointType.HipCenter].Position.X - skeleton.Joints[JointType.AnkleLeft].Position.X);
+
+            // the angle I'm looking for is the formed between the HipCenter, the floor and the AnkleLeft
+            // I know the position of the HipCenter and the AnkleLeft so it can be calculed by
+            // arctang[(Hip.X-Ank.X) / (Hip.Y-Ank.Y)]
+            double segmentAngle = Math.Atan(distB / distA);
+
+            // With this operation I transform the angle to degrees
+            double degrees = segmentAngle * (180 / Math.PI);
+            degrees = degrees % 360;
+
+            // Check if the actual angle is equal to the angle specified
+            if (Math.Abs(angle - degrees) < allowed_error)
+                check = true;
+            else
+                check = false;
+
+            return check;
+
+        }
+
+        private bool pos3(Skeleton skeleton)
+        {
+            double angle = 30;
+            double allowed_error = 10;
+
+            return angleLegR(skeleton, angle, allowed_error);
+        }
+
+        private bool angleLegR(Skeleton skeleton, double angle, double allowed_error)
+        {
+
+            //return variable - true if position is valid, false if invalid
+            bool check = true;
+
+            float distA, distB;
+            distA = System.Math.Abs(skeleton.Joints[JointType.HipCenter].Position.Y - skeleton.Joints[JointType.AnkleRight].Position.Y);
+            distB = System.Math.Abs(skeleton.Joints[JointType.HipCenter].Position.X - skeleton.Joints[JointType.AnkleRight].Position.X);
+
+            // the angle I'm looking for is the formed between the HipCenter, the floor and the AnkleLeft
+            // I know the position of the HipCenter and the AnkleLeft so it can be calculed by
+            // arctang[(Hip.X-Ank.X) / (Hip.Y-Ank.Y)]
+            double segmentAngle = Math.Atan(distB / distA);
+
+            // With this operation I transform the angle to degrees
+            double degrees = segmentAngle * (180 / Math.PI);
+            degrees = degrees % 360;
+
+            // Check if the actual angle is equal to the angle specified
+            if (Math.Abs(angle - degrees) < allowed_error)
+                check = true;
+            else
+                check = false;
+
+            return check;
+
+        }
 
 
     }
