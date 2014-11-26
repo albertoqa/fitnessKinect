@@ -58,7 +58,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         /// <summary>
         /// Brush used for drawing joints that are currently inferred
-        /// </summary>        
+        /// </summary>
         private readonly Brush inferredJointBrush = Brushes.Yellow;
 
         /// <summary>
@@ -68,10 +68,18 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         /// <summary>
         /// Pen used for drawing bones that are currently inferred
-        /// </summary>        
+        /// </summary>
         private readonly Pen inferredBonePen = new Pen(Brushes.Gray, 1);
 
-        private int nmov;
+
+        private int nmov; // actual movement
+
+        // sc - actual score
+        // repes - actual number of reps
+        // ex - info of each exercise
+        // stopwatch - chronometer for the exercise
+        // playing - only track when user press start and until it has finished the complete exercise
+        // arriba - movement 2 and 3 aux variable
         private int ntr = 0, sc = 0, repes = 0;
         private string[] ex;
         private bool arriba = false, playing = false;
@@ -108,6 +116,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         public MainWindow()
         {
             InitializeComponent();
+            // extra information for each exercise
             this.ex = new string[5];
             this.ex[0] = "Posición inicial - brazos relajados y piernas juntas";
             this.ex[1] = "Levanta los brazos por encima de la cabeza";
@@ -166,11 +175,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             // Create the drawing group we'll use for drawing
             this.drawingGroup = new DrawingGroup();
 
+            // when loading the program set the variables
             nmov = 0;
 
             this.exer.Content = ex[nmov];
             this.ntrys.Content = ntr;
-            this.scor.Content = sc; 
+            this.scor.Content = sc;
             this.rep.Content = repes;
             this.inf.Content = "Empezamos el juego!";
 
@@ -182,7 +192,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
-            // To make your app robust against plug/unplug, 
+            // To make your app robust against plug/unplug,
             // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit (See components in Toolkit Browser).
             foreach (var potentialSensor in KinectSensor.KinectSensors)
             {
@@ -323,6 +333,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
         {
 
+            // Function that control the complete game
             gameControl(skeleton, drawingContext);
 
             // Render Torso
@@ -353,7 +364,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             this.DrawBone(skeleton, drawingContext, JointType.HipRight, JointType.KneeRight);
             this.DrawBone(skeleton, drawingContext, JointType.KneeRight, JointType.AnkleRight);
             this.DrawBone(skeleton, drawingContext, JointType.AnkleRight, JointType.FootRight);
- 
+
             // Render Joints
             foreach (Joint joint in skeleton.Joints)
             {
@@ -361,11 +372,11 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
                 if (joint.TrackingState == JointTrackingState.Tracked)
                 {
-                    drawBrush = this.trackedJointBrush;                    
+                    drawBrush = this.trackedJointBrush;
                 }
                 else if (joint.TrackingState == JointTrackingState.Inferred)
                 {
-                    drawBrush = this.inferredJointBrush;                    
+                    drawBrush = this.inferredJointBrush;
                 }
 
                 if (drawBrush != null)
@@ -382,12 +393,13 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <returns>mapped point</returns>
         private Point SkeletonPointToScreen(SkeletonPoint skelpoint)
         {
-            // Convert point to depth space.  
+            // Convert point to depth space.
             // We are not using depth directly, but we do want the points in our 640x480 output resolution.
             DepthImagePoint depthPoint = this.sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skelpoint, DepthImageFormat.Resolution640x480Fps30);
             return new Point(depthPoint.X, depthPoint.Y);
         }
 
+        // action of the button startGame
         private void startGame(object sender, RoutedEventArgs e)
         {
             startButton.Visibility = Visibility.Hidden;
@@ -401,14 +413,17 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             rep.Visibility = Visibility.Visible;
             of5.Visibility = Visibility.Visible;
 
+            // start and restart the chronometer
             stopwatch.Reset();
             stopwatch.Start();
             this.ntrys.Content = stopwatch.Elapsed;
 
+            // start to track the game
             playing = true;
 
-            nmov = ntr = repes = 0; 
+            nmov = ntr = repes = 0;
             arriba = false;
+            // maximum score is 10
             sc = 10;
             this.scor.Content = sc;
 
@@ -418,9 +433,11 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         {
 
             this.inf.Content = "Felicidades!!! Lo has conseguido ;)";
+            // stop chronometer
             stopwatch.Stop();
             this.ntrys.Content = stopwatch.Elapsed;
-           
+
+            // stop tracking
             playing = false;
 
             startButton.Visibility = Visibility.Visible;
@@ -434,12 +451,15 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             rep.Visibility = Visibility.Hidden;
             of5.Visibility = Visibility.Hidden;
 
+            // restart counters
             nmov = ntr = sc = repes = 0;
             arriba = false;
         }
 
+
         private void gameControl(Skeleton skeleton, DrawingContext drawingContext)
         {
+            // when user press start playing = true, when game finish playing = false
             if (playing)
             {
                 // movimiento en reposo
@@ -545,6 +565,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         this.rep.Content = repes;
                     }
                 }
+                // volver a la posicion inicial
                 else if (nmov == 4)
                 {
                     this.exer.Content = ex[4];
@@ -553,6 +574,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         nmov++;
                     }
                 }
+                // finish the game
                 else
                 {
                     endGame();
@@ -608,7 +630,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         {
             if (null != this.sensor)
             {
-              
+
                 this.sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Default;
             }
         }
@@ -726,7 +748,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         double HipCenterPosZ = received.Joints[JointType.HipCenter].Position.Z;
 
                         //if left ankle is very close to right ankle then verify the rest of the skeleton points
-                        //if (received.Joints[JointType.AnkleLeft].Equals(received.Joints[JointType.AnkleRight])) 
+                        //if (received.Joints[JointType.AnkleLeft].Equals(received.Joints[JointType.AnkleRight]))
                         double AnkLPosX = received.Joints[JointType.AnkleLeft].Position.X;
                         double AnkLPosY = received.Joints[JointType.AnkleLeft].Position.Y;
                         double AnkLPosZ = received.Joints[JointType.AnkleLeft].Position.Z;
