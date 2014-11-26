@@ -12,6 +12,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Microsoft.Kinect;
+    using System.Diagnostics;
+    using System.Threading;
 
 
     /// <summary>
@@ -73,6 +75,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         private int ntr = 0, sc = 0, repes = 0;
         private string[] ex;
         private bool arriba = false;
+        Stopwatch stopwatch = new Stopwatch();
 
         /// <summary>
         /// Active Kinect sensor
@@ -398,20 +401,31 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             rep.Visibility = Visibility.Visible;
             of5.Visibility = Visibility.Visible;
 
-            nmov = ntr = sc = repes = 0; 
+            stopwatch.Start();
+            this.ntrys.Content = stopwatch.Elapsed;
+
+            nmov = ntr = repes = 0; 
             arriba = false;
+            sc = 10;
+            this.scor.Content = sc;
 
         }
 
         private void endGame()
         {
+
+            this.inf.Content = "Felicidades!!! Lo has conseguido ;)";
+            stopwatch.Stop();
+            this.ntrys.Content = stopwatch.Elapsed;
+            stopwatch.Reset();
+
             startButton.Visibility = Visibility.Visible;
-            score.Visibility = Visibility.Hidden;
-            ntry.Visibility = Visibility.Hidden;
+            //score.Visibility = Visibility.Hidden;
+            //ntry.Visibility = Visibility.Hidden;
             exercise.Visibility = Visibility.Hidden;
             exer.Visibility = Visibility.Hidden;
-            ntrys.Visibility = Visibility.Hidden;
-            scor.Visibility = Visibility.Hidden;
+            //ntrys.Visibility = Visibility.Hidden;
+            //scor.Visibility = Visibility.Hidden;
             reps.Visibility = Visibility.Hidden;
             rep.Visibility = Visibility.Hidden;
             of5.Visibility = Visibility.Hidden;
@@ -456,6 +470,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     nmov = 0;
                     repes = 0;
                     arriba = false;
+                    sc--;
+                    this.scor.Content = sc;
                 }
 
                 // si llegamos arriba
@@ -480,6 +496,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     this.inf.Content = "Eres todo un atleta! Intenta repetirlo con la otra pierna!";
                     nmov++;
                     repes = 0;
+                    this.rep.Content = repes;
                 }
             }
             else if (nmov == 3)
@@ -493,6 +510,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                     nmov = 0;
                     repes = 0;
                     arriba = false;
+                    sc--;
+                    this.scor.Content = sc;
                 }
 
                 // si llegamos arriba
@@ -516,6 +535,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 {
                     this.inf.Content = "Ya casi hemos terminado, solo falta que te relajes...";
                     nmov++;
+                    repes = 0;
+                    this.rep.Content = repes;
                 }
             }
             else if (nmov == 4)
@@ -523,7 +544,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 this.exer.Content = ex[4];
                 if (pos0(skeleton))
                 {
-                    this.inf.Content = "Felicidades!!! Lo has conseguido ;)";
                     nmov++;
                 }
             }
@@ -531,6 +551,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             {
                 endGame();
             }
+
+            this.ntrys.Content = stopwatch.Elapsed;
 
         }
 
@@ -724,7 +746,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                             return false;*/
 
                         // could variate AnkLposX and AnkLPosY
-                        if (Math.Abs(AnkLPosX - ProjectedPointFootLX) <= DistErrorL && Math.Abs(AnkRPosX - ProjectedPointFootLX) <= DistErrorL)
+                        if (Math.Abs(AnkLPosX - ProjectedPointFootLX) <= DistErrorL+0.05 && Math.Abs(AnkRPosX - ProjectedPointFootLX) <= DistErrorL+0.05)
                             return true;
                         else
                             return false;
