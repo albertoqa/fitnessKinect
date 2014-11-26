@@ -415,6 +415,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             reps.Visibility = Visibility.Hidden;
             rep.Visibility = Visibility.Hidden;
             of5.Visibility = Visibility.Hidden;
+
+            nmov = ntr = sc = repes = 0;
+            arriba = false;
         }
 
         private void gameControl(Skeleton skeleton, DrawingContext drawingContext)
@@ -451,6 +454,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 {
                     this.inf.Content = "Has bajado los brazos, tenemos que empezar de nuevo.";
                     nmov = 0;
+                    repes = 0;
+                    arriba = false;
                 }
 
                 // si llegamos arriba
@@ -462,10 +467,11 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 }
 
                 // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
-                if (arriba && pos1(skeleton) && repes <=4)
+                if (arriba && posx(skeleton) && repes <=4)
                 {
                     arriba = false;
                     repes++;
+                    this.rep.Content = repes;
                 }
 
                 // si ya hemos subido y bajado 5 veces
@@ -473,17 +479,20 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 {
                     this.inf.Content = "Eres todo un atleta! Intenta repetirlo con la otra pierna!";
                     nmov++;
+                    repes = 0;
                 }
             }
             else if (nmov == 3)
             {
-                this.exer.Content = ex[2];
+                this.exer.Content = ex[3];
 
                 // si en algun momento bajamos los brazos, empezamos de cero el ejercicio
                 if (!pos1(skeleton))
                 {
                     this.inf.Content = "Has bajado los brazos, tenemos que empezar de nuevo.";
                     nmov = 0;
+                    repes = 0;
+                    arriba = false;
                 }
 
                 // si llegamos arriba
@@ -495,10 +504,11 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 }
 
                 // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
-                if (arriba && pos1(skeleton) && repes <= 4)
+                if (arriba && posx(skeleton) && repes <= 4)
                 {
                     arriba = false;
                     repes++;
+                    this.rep.Content = repes;
                 }
 
                 // si ya hemos subido y bajado 5 veces
@@ -574,12 +584,23 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             }
         }
 
+        private bool posx(Skeleton skeleton)
+        {
+            bool arms = pos1(skeleton);
+            bool legs = AreFeetTogether(skeleton);
+
+            return (arms && legs);
+        }
+
+
+
+
         // Obtenido de Carla Simoes
         private bool pos0(Skeleton skeleton)
         {
             bool body = IsAlignedBodyAndArms(skeleton);
             bool legs = AreFeetTogether(skeleton);
-
+            legs = true;
             if (body && legs)
                 return true;
             else
@@ -691,12 +712,16 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                         //caldulate admited error 5% that correspond to 9 degrees for each side
                         double radian1 = (4.5 * Math.PI) / 180;
                         double DistErrorL = distHiptoAnkleL * Math.Tan(radian1);
+                        //double DistErrorL = 10;
                         //determine of projected point from HIP CENTER to LEFT ANKLE and RIGHT and then assume error
                         double ProjectedPointFootLX = HipCenterPosX;
                         double ProjectedPointFootLY = AnkLPosY;
                         double ProjectedPointFootLZ = HipCenterPosZ;
 
-
+                        /*if (Math.Abs(AnkRPosX - AnkLPosX) < 1)
+                            return true;
+                        else
+                            return false;*/
 
                         // could variate AnkLposX and AnkLPosY
                         if (Math.Abs(AnkLPosX - ProjectedPointFootLX) <= DistErrorL && Math.Abs(AnkRPosX - ProjectedPointFootLX) <= DistErrorL)
