@@ -74,7 +74,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         private int nmov;
         private int ntr = 0, sc = 0, repes = 0;
         private string[] ex;
-        private bool arriba = false;
+        private bool arriba = false, playing = false;
         Stopwatch stopwatch = new Stopwatch();
 
         /// <summary>
@@ -401,8 +401,11 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             rep.Visibility = Visibility.Visible;
             of5.Visibility = Visibility.Visible;
 
+            stopwatch.Reset();
             stopwatch.Start();
             this.ntrys.Content = stopwatch.Elapsed;
+
+            playing = true;
 
             nmov = ntr = repes = 0; 
             arriba = false;
@@ -417,7 +420,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             this.inf.Content = "Felicidades!!! Lo has conseguido ;)";
             stopwatch.Stop();
             this.ntrys.Content = stopwatch.Elapsed;
-            stopwatch.Reset();
+           
+            playing = false;
 
             startButton.Visibility = Visibility.Visible;
             //score.Visibility = Visibility.Hidden;
@@ -436,123 +440,126 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         private void gameControl(Skeleton skeleton, DrawingContext drawingContext)
         {
-            // movimiento en reposo
-            if (nmov == 0)
+            if (playing)
             {
-                this.exer.Content = ex[0];
-                if (pos0(skeleton))
+                // movimiento en reposo
+                if (nmov == 0)
                 {
-                    this.inf.Content = "Muy bien, has superado el primer movimiento";
-                    nmov++;
+                    this.exer.Content = ex[0];
+                    if (pos0(skeleton))
+                    {
+                        this.inf.Content = "Muy bien, has superado el primer movimiento";
+                        nmov++;
+                    }
+
                 }
-               
-            }
                 // brazos en cruz
-            else if (nmov == 1)
-            {
-                this.exer.Content = ex[1];
-                if (pos1(skeleton))
+                else if (nmov == 1)
                 {
-                    this.inf.Content = "Perfecto! Pasamos al siguiente nivel";
-                    nmov++;
-                }
+                    this.exer.Content = ex[1];
+                    if (pos1(skeleton))
+                    {
+                        this.inf.Content = "Perfecto! Pasamos al siguiente nivel";
+                        nmov++;
+                    }
 
-            }
+                }
                 // ya hemos puesto los brazos en cruz
-            else if (nmov == 2)
-            {
-                this.exer.Content = ex[2];
-
-                // si en algun momento bajamos los brazos, empezamos de cero el ejercicio
-                if (!pos1(skeleton))
+                else if (nmov == 2)
                 {
-                    this.inf.Content = "Has bajado los brazos, tenemos que empezar de nuevo.";
-                    nmov = 0;
-                    repes = 0;
-                    arriba = false;
-                    sc--;
-                    this.scor.Content = sc;
+                    this.exer.Content = ex[2];
+
+                    // si en algun momento bajamos los brazos, empezamos de cero el ejercicio
+                    if (!pos1(skeleton))
+                    {
+                        this.inf.Content = "Has bajado los brazos, tenemos que empezar de nuevo.";
+                        nmov = 0;
+                        repes = 0;
+                        arriba = false;
+                        sc--;
+                        this.scor.Content = sc;
+                    }
+
+                    // si llegamos arriba
+                    if (!arriba && pos2(skeleton))
+                    {
+                        // nmov++;
+                        // repes++;
+                        arriba = true;
+                    }
+
+                    // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
+                    if (arriba && posx(skeleton) && repes <= 4)
+                    {
+                        arriba = false;
+                        repes++;
+                        this.rep.Content = repes;
+                    }
+
+                    // si ya hemos subido y bajado 5 veces
+                    if (repes == 4)
+                    {
+                        this.inf.Content = "Eres todo un atleta! Intenta repetirlo con la otra pierna!";
+                        nmov++;
+                        repes = 0;
+                        this.rep.Content = repes;
+                    }
+                }
+                else if (nmov == 3)
+                {
+                    this.exer.Content = ex[3];
+
+                    // si en algun momento bajamos los brazos, empezamos de cero el ejercicio
+                    if (!pos1(skeleton))
+                    {
+                        this.inf.Content = "Has bajado los brazos, tenemos que empezar de nuevo.";
+                        nmov = 0;
+                        repes = 0;
+                        arriba = false;
+                        sc--;
+                        this.scor.Content = sc;
+                    }
+
+                    // si llegamos arriba
+                    if (!arriba && pos3(skeleton))
+                    {
+                        // nmov++;
+                        // repes++;
+                        arriba = true;
+                    }
+
+                    // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
+                    if (arriba && posx(skeleton) && repes <= 4)
+                    {
+                        arriba = false;
+                        repes++;
+                        this.rep.Content = repes;
+                    }
+
+                    // si ya hemos subido y bajado 5 veces
+                    if (repes == 4)
+                    {
+                        this.inf.Content = "Ya casi hemos terminado, solo falta que te relajes...";
+                        nmov++;
+                        repes = 0;
+                        this.rep.Content = repes;
+                    }
+                }
+                else if (nmov == 4)
+                {
+                    this.exer.Content = ex[4];
+                    if (pos0(skeleton))
+                    {
+                        nmov++;
+                    }
+                }
+                else
+                {
+                    endGame();
                 }
 
-                // si llegamos arriba
-                if (!arriba && pos2(skeleton))
-                {
-                   // nmov++;
-                   // repes++;
-                    arriba = true;
-                }
-
-                // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
-                if (arriba && posx(skeleton) && repes <=4)
-                {
-                    arriba = false;
-                    repes++;
-                    this.rep.Content = repes;
-                }
-
-                // si ya hemos subido y bajado 5 veces
-                if (repes == 4)
-                {
-                    this.inf.Content = "Eres todo un atleta! Intenta repetirlo con la otra pierna!";
-                    nmov++;
-                    repes = 0;
-                    this.rep.Content = repes;
-                }
+                this.ntrys.Content = stopwatch.Elapsed;
             }
-            else if (nmov == 3)
-            {
-                this.exer.Content = ex[3];
-
-                // si en algun momento bajamos los brazos, empezamos de cero el ejercicio
-                if (!pos1(skeleton))
-                {
-                    this.inf.Content = "Has bajado los brazos, tenemos que empezar de nuevo.";
-                    nmov = 0;
-                    repes = 0;
-                    arriba = false;
-                    sc--;
-                    this.scor.Content = sc;
-                }
-
-                // si llegamos arriba
-                if (!arriba && pos3(skeleton))
-                {
-                    // nmov++;
-                    // repes++;
-                    arriba = true;
-                }
-
-                // si ya hemos estado arriba, tenemos que ponernos rectos y con los brazos en cruz
-                if (arriba && posx(skeleton) && repes <= 4)
-                {
-                    arriba = false;
-                    repes++;
-                    this.rep.Content = repes;
-                }
-
-                // si ya hemos subido y bajado 5 veces
-                if (repes == 4)
-                {
-                    this.inf.Content = "Ya casi hemos terminado, solo falta que te relajes...";
-                    nmov++;
-                    repes = 0;
-                    this.rep.Content = repes;
-                }
-            }
-            else if (nmov == 4)
-            {
-                this.exer.Content = ex[4];
-                if (pos0(skeleton))
-                {
-                    nmov++;
-                }
-            }
-            else
-            {
-                endGame();
-            }
-
-            this.ntrys.Content = stopwatch.Elapsed;
 
         }
 
@@ -606,6 +613,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             }
         }
 
+        //brazos levantados, piernas juntas
         private bool posx(Skeleton skeleton)
         {
             bool arms = pos1(skeleton);
@@ -613,9 +621,6 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
             return (arms && legs);
         }
-
-
-
 
         // Obtenido de Carla Simoes
         private bool pos0(Skeleton skeleton)
