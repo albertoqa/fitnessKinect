@@ -795,8 +795,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         private bool pos2(Skeleton skeleton)
         {
-            double angle = 30;
-            double allowed_error = 10;
+            double angle = 40;
+            double allowed_error = 5;
 
             return angleLegL(skeleton, angle, allowed_error);
         }
@@ -838,8 +838,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         private bool pos3(Skeleton skeleton)
         {
-            double angle = 30;
-            double allowed_error = 10;
+            double angle = 40;
+            double allowed_error = 5;
 
             return angleLegR(skeleton, angle, allowed_error);
         }
