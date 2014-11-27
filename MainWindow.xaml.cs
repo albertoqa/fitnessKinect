@@ -400,15 +400,21 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             return new Point(depthPoint.X, depthPoint.Y);
         }
         
-        
+        // si mano izquierda por encima de la cabeza y mano derecha por debajo de la spine
         private bool posIni(Skeleton skeleton) {
             
+            bool right = false, left = false;
             
+            if(skeleton.Joints[JointType.HandLeft].Position.Y > skeleton.Joints[JointType.Head].Position.Y)
+                left = true;
+            if(skeleton.Joints[JointType.HandRight].Position.Y < skeleton.Joints[JointType.Spine].Position.Y)
+                right = true;
             
-            
+            return (right && left);
             
         }
         
+        // iniciar el juego con un movimiento determinado
         private void startGameWithMovement(Skeleton skeleton) {
             
             if(playing == false) {
