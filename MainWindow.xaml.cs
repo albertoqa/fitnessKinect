@@ -333,9 +333,10 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
         {
 
+            startGameWithMovement(skeleton);
             // Function that control the complete game
             gameControl(skeleton, drawingContext);
-
+            
             // Render Torso
             this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
@@ -398,6 +399,53 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             DepthImagePoint depthPoint = this.sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skelpoint, DepthImageFormat.Resolution640x480Fps30);
             return new Point(depthPoint.X, depthPoint.Y);
         }
+        
+        
+        private bool posIni(Skeleton skeleton) {
+            
+            
+            
+            
+            
+        }
+        
+        private void startGameWithMovement(Skeleton skeleton) {
+            
+            if(playing == false) {
+                if(posIni(skeleton)) {
+                    
+                    startButton.Visibility = Visibility.Hidden;
+                    score.Visibility = Visibility.Visible;
+                    ntry.Visibility = Visibility.Visible;
+                    exercise.Visibility = Visibility.Visible;
+                    exer.Visibility = Visibility.Visible;
+                    ntrys.Visibility = Visibility.Visible;
+                    scor.Visibility = Visibility.Visible;
+                    reps.Visibility = Visibility.Visible;
+                    rep.Visibility = Visibility.Visible;
+                    of5.Visibility = Visibility.Visible;
+                    
+                    // start and restart the chronometer
+                    stopwatch.Reset();
+                    stopwatch.Start();
+                    this.ntrys.Content = stopwatch.Elapsed;
+                    
+                    // start to track the game
+                    playing = true;
+                    
+                    nmov = ntr = repes = 0;
+                    arriba = false;
+                    // maximum score is 10
+                    sc = 10;
+                    this.scor.Content = sc;
+
+                }
+                
+                
+            }
+            
+        }
+        
 
         // action of the button startGame
         private void startGame(object sender, RoutedEventArgs e)
