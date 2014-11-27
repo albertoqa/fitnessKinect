@@ -333,12 +333,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         private void DrawBonesAndJoints(Skeleton skeleton, DrawingContext drawingContext)
         {
 
-            startGameWithMovement(skeleton);
+            startGameWithMovement(skeleton, drawingContext);
             // Function that control the complete game
             gameControl(skeleton, drawingContext);
             
             // Render Torso
-            this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
+            /*this.DrawBone(skeleton, drawingContext, JointType.Head, JointType.ShoulderCenter);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderLeft);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.ShoulderRight);
             this.DrawBone(skeleton, drawingContext, JointType.ShoulderCenter, JointType.Spine);
@@ -384,7 +384,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                 {
                     drawingContext.DrawEllipse(drawBrush, null, this.SkeletonPointToScreen(joint.Position), JointThickness, JointThickness);
                 }
-            }
+            }*/
         }
 
         /// <summary>
@@ -415,9 +415,27 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         }
         
         // iniciar el juego con un movimiento determinado
-        private void startGameWithMovement(Skeleton skeleton) {
+        private void startGameWithMovement(Skeleton skeleton, DrawingContext drawingContext) {
             
             if(playing == false) {
+                
+                Pen drawPen = this.inferredBonePen;
+                
+                Joint joint0 = skeleton.Joints[Head];
+                Joint joint1 = skeleton.Joints[Spine];
+                
+                Point p0, p1, p2, p3;
+                p1 = p0 = this.SkeletonPointToScreen(joint0.Position);
+                p0.x = p0.x-10;
+                p1.x = p1.x+10;
+                
+                p2 = p3 = this.SkeletonPointToScreen(joint0.Position);
+                p2.x = p2.x-10;
+                p3.x = p3.x+10;
+                
+                drawingContext.DrawLine(drawPen, p0, p1);
+                drawingContext.DrawLine(drawPen, p2, p3);
+                
                 if(posIni(skeleton)) {
                     
                     startButton.Visibility = Visibility.Hidden;
@@ -513,12 +531,29 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         private void gameControl(Skeleton skeleton, DrawingContext drawingContext)
         {
+            Brush b = Brushes.Blue;
+
             // when user press start playing = true, when game finish playing = false
             if (playing)
             {
                 // movimiento en reposo
                 if (nmov == 0)
                 {
+                    
+                    Point p0, p1, p2, p3;
+                    p0 = this.SkeletonPointToScreen(skeleton.Joints[JointType.HipLeft]);
+                    p0.x = p0.x-3;
+                    drawingContext.DrawEllipse(b, null, p0, 5, 5);
+                    p1 = this.SkeletonPointToScreen(skeleton.Joints[JointType.HipRight]);
+                    p1.x = p1.x+3;
+                    drawingContext.DrawEllipse(b, null, p0, 5, 5);
+                    p0 = this.SkeletonPointToScreen(skeleton.Joints[JointType.FootRight]);
+                    p0.x = skeleton.Joints[JointType.HipLeft].X;
+                    drawingContext.DrawEllipse(b, null, p0, 5, 5);
+                    p3 = this.SkeletonPointToScreen(skeleton.Joints[JointType.FootLeft]);
+                    p3.x = skeleton.Joints[JointType.HipLeft].X;
+                    drawingContext.DrawEllipse(b, null, p0, 5, 5);
+                        
                     this.exer.Content = ex[0];
                     if (pos0(skeleton))
                     {
